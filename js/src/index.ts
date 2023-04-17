@@ -1,27 +1,38 @@
-import algosdk from "algosdk"
-import { Algodv2 } from "algosdk"
+import algosdk, { Algodv2, BaseHTTPClient } from "algosdk"
+import { AlgodTokenHeader, CustomTokenHeader, IndexerTokenHeader } from "algosdk/dist/types/client/urlTokenBaseHTTPClient.js"
+
 import * as dotenv from "dotenv"
 import { __dirname } from './helper/dirname.js'
 dotenv.config({ path: __dirname + '/.env' })
 
 interface AlgodCredentials {
-  token: string,
+  token: string | CustomTokenHeader | BaseHTTPClient,
   url: string,
   port: string
 }
 
 class AlgoTools {
   algodClient: Algodv2
+  indexerClient: algosdk.Indexer
   mnemonics: [string]
 
   constructor(algodCredentials: AlgodCredentials, mnemonics: [string]) {
-    this.algodClient = new algosdk.Algodv2(algodCredentials.token, algodCredentials.url, algodCredentials.port)
+    if (algodCredentials.url.includes('purestake')) {
+      this.algodClient = new algosdk.Algodv2(algodCredentials.token, `${algodCredentials.url}/ps2`, algodCredentials.port)
+      this.indexerClient = new algosdk.Indexer(algodCredentials.token, `${algodCredentials.url}/idx2`, algodCredentials.port)
+    } else {
+      this.algodClient = new algosdk.Algodv2(algodCredentials.token, algodCredentials.url, algodCredentials.port)
+      this.indexerClient = new algosdk.Indexer(algodCredentials.token, algodCredentials.url, algodCredentials.port)
+    }
+
     this.mnemonics = mnemonics
   }
 
   public async init() {
     let params = await this.algodClient.getTransactionParams().do()
     console.log(params)
+    let blockInfo = await this.indexerClient.lookupBlock(5).do()
+    console.log(blockInfo)
   }
 
   public async create_accountasync () {
@@ -129,7 +140,9 @@ class AlgoTools {
   // console.log(address)
   // let params = await algodClient.getTransactionParams().do()
   // await create_account()
-  const algoTools = new AlgoTools({token: '', url: process.env.ALGO_QUICKNODE!, port: ''}, [process.env.WALLET_MAIN!])
+  const token = { 'X-API-Key': process.env.PURESTAKE_TOKEN || '' }
+  const algonode_url = process.env.PURESTAKE_MAINNET
+  const algoTools = new AlgoTools({token: token, url: algonode_url!, port: ''}, [process.env.WALLET_MAIN!])
   await algoTools.init()
 
 })().catch((e) => {
