@@ -35,7 +35,7 @@ class AlgoTools {
     console.log(blockInfo)
   }
 
-  public async create_accountasync () {
+  public async createAccount () {
     try {
       let account = algosdk.generateAccount()
       let mn = algosdk.secretKeyToMnemonic(account.sk)

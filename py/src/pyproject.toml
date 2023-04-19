@@ -1,0 +1,22 @@
+[project]
+name = "algo_tools"
+version = "0.0.1"
+description = "Tools to make working with Algorand easier."
+authors = [
+  { name = "Victor Shahbazian", email = "victorsdev@proton.me" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.7"
+dependencies = [
+  "requests>2",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/victorsh/algo-tools"
+"Bug Tracker" = "https://github.com/victorsh/algo-tools/issues"
